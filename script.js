@@ -190,7 +190,8 @@ const match = window.location.pathname.match(/webinar(\d+)/i);
 const webinarNumber = Number(match?.[1] || 93);
 const event = webinars[webinarNumber] || webinars[93];
 
-document.title = `${event.title.replace(/<[^>]+>/g, '')} — Impatient`;
+const stripTags = value => value.replace(/<[^>]+>/g, '');
+document.title = `${stripTags(event.title)} — Impatient`;
 document.querySelector('meta[name="description"]').content = event.premise;
 document.getElementById('event-title').innerHTML = event.title;
 document.getElementById('event-premise').textContent = event.premise;
@@ -214,34 +215,30 @@ event.topics.forEach(text => {
 const speakerGrid = document.getElementById('speaker-grid');
 event.speakers.forEach(person => {
   const card = document.createElement('article');
-  card.className = 'speaker-card';
+  card.className = 'person';
   const initials = person.name.split(/\s+/).map(part => part[0]).slice(0, 2).join('');
   card.innerHTML = `
     ${person.image
-      ? `<div class="speaker-image"><img src="../assets/speakers/${person.image}" alt="${person.name}" width="360" height="360"></div>`
-      : `<div class="speaker-placeholder" aria-hidden="true">${initials}</div>`}
-    <h3>${person.name}</h3>
-    <p>${person.role}${person.company ? `<br><strong>${person.company}</strong>` : ''}</p>`;
+      ? `<div class="person-image"><img src="../assets/speakers/${person.image}" alt="${person.name}" width="360" height="360"></div>`
+      : `<div class="person-placeholder" aria-hidden="true">${initials}</div>`}
+    <div><h2>${person.name}</h2><p>${person.role}${person.company ? `<br><strong>${person.company}</strong>` : ''}</p></div>`;
   speakerGrid.append(card);
 });
 
 const recordingCopy = document.getElementById('recording-copy');
-const recordingCta = document.getElementById('recording-cta');
-const heroCta = document.getElementById('hero-cta');
-const headerCta = document.getElementById('header-cta');
 recordingCopy.textContent = event.recordingCopy || 'Watch the complete discussion, including the audience questions and the points that could not be reduced to a slide.';
 
+const recordingLinks = document.querySelectorAll('.recording-link');
 if (event.recording) {
-  [recordingCta, heroCta, headerCta].forEach(link => {
+  recordingLinks.forEach(link => {
     link.href = event.recording;
     link.target = '_blank';
     link.rel = 'noopener';
   });
 } else {
-  recordingCta.textContent = 'Available in Circle';
-  recordingCta.setAttribute('aria-disabled', 'true');
-  heroCta.textContent = 'Recording in Circle';
-  heroCta.href = '#recording';
-  headerCta.textContent = 'Recording in Circle';
-  headerCta.href = '#recording';
+  recordingLinks.forEach(link => {
+    link.textContent = 'Recording in Circle';
+    link.href = '#recording';
+    link.setAttribute('aria-disabled', 'true');
+  });
 }

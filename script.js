@@ -242,3 +242,10 @@ if (event.recording) {
     link.setAttribute('aria-disabled', 'true');
   });
 }
+
+// Use the approved panel hero image from the public GitHub Pages origin.
+// The impatient.health router serves numbered webinar folders but not template assets.
+const panelHero = document.querySelector('.hero-photograph img');
+if (panelHero) {
+  panelHero.src = 'https://impatientpaul.github.io/impatient-webinars/templates/panel/assets/community-runner.png';
+}
